@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-examples = ["matplotlib>=3.4"]
+examples = ["matplotlib>=3.4", "h5py>=3.7"]
 test = ["pytest>=7.0", "matplotlib>=3.4"]
 # Full RIR pipeline: DecayFitNet decay-time estimation runs the ONNX model
 # directly (torch-free). Model files (DecayFitNet*_v10.onnx, input_transform*.pkl)
