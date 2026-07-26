@@ -64,7 +64,7 @@ def constrained_lsq_decay_analysis(edf_norm, kernel, has_noise_col=False,
 
 
 def common_slope_fit_edc(edfs, common_decay_times, fs, no_noise=True,
-                         compensated=True, output_size=None):
+                         compensated=True, output_size=None, n_jobs=1):
     """Fit EDC amplitudes for a batch of fixed decay times.
 
     ``edfs`` has shape ``(n_curves, L)`` in linear scale. Returns
@@ -84,16 +84,29 @@ def common_slope_fit_edc(edfs, common_decay_times, fs, no_noise=True,
     K = edc_decay_kernel(common, time_axis, no_noise=no_noise, compensated=compensated)
     has_noise = (not no_noise) or (not compensated)
 
-    a_vals = np.zeros((n_curves, d))
-    n_vals = np.zeros(n_curves)
     idx = np.arange(L)
-    for i in range(n_curves):
+
+    def fit_one(i):
         norm = float(edfs[i, 0])
         edf = edfs[i] / norm
         if xi is not None:
             edf = np.interp(xi, idx, edf)
         w = constrained_lsq_decay_analysis(edf, K, has_noise_col=has_noise)
-        a_vals[i] = w[:d] * norm
-        if has_noise:
-            n_vals[i] = w[-1] * norm
+        noise = w[-1] * norm if has_noise else 0.0
+        return w[:d] * norm, noise
+
+    if n_jobs in (-1, 0, None):
+        import os
+        n_jobs = os.cpu_count() or 1
+    n_jobs = min(int(n_jobs), n_curves)
+    if n_jobs > 1 and n_curves > 1:
+        from concurrent.futures import ThreadPoolExecutor
+
+        with ThreadPoolExecutor(max_workers=n_jobs) as ex:
+            results = list(ex.map(fit_one, range(n_curves)))
+    else:
+        results = [fit_one(i) for i in range(n_curves)]
+
+    a_vals = np.stack([result[0] for result in results])
+    n_vals = np.asarray([result[1] for result in results])
     return a_vals, n_vals

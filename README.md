@@ -61,8 +61,3 @@ print(result["aVals"])             # energy amplitudes, one row per RIR
 ```
 
 For automatic decay-time estimation, clone [DecayFitNet](https://github.com/georg-goetz/DecayFitNet) and set `DFN_MODEL_DIR` to either the checkout or its `model/` directory. When the decay times are already known, pass them with `common_decay_times=` and no model files are required.
-
-## Main References
-
-- G. Götz, R. Falcón Pérez, S. J. Schlecht, and V. Pulkki, [*Neural network for multi-exponential sound energy decay analysis*](https://doi.org/10.1121/10.0013416), *Journal of the Acoustical Society of America*, vol. 152, no. 2, pp. 942–953, 2022.
-- G. Götz, S. J. Schlecht, and V. Pulkki, [*Common-slope modeling of late reverberation*](https://doi.org/10.1109/TASLP.2023.3317572), *IEEE/ACM Transactions on Audio, Speech, and Language Processing*, vol. 31, pp. 3945–3957, 2023. 

@@ -207,10 +207,17 @@ def common_slope_fit(rir2s, common_decay_times, fs, no_noise=True, alpha=1.0,
         os.environ.update({v: "1" for v in _thread_vars})
         try:
             chunksize = max(1, n_curves // (n_jobs * 4))
-            with ProcessPoolExecutor(max_workers=n_jobs, initializer=_pool_init,
-                                     initargs=(X, no_noise, alpha, kwargs)) as ex:
-                results = list(ex.map(_pool_fit, (rir2s[i] for i in range(n_curves)),
-                                      chunksize=chunksize))
+            try:
+                with ProcessPoolExecutor(max_workers=n_jobs, initializer=_pool_init,
+                                         initargs=(X, no_noise, alpha, kwargs)) as ex:
+                    results = list(ex.map(_pool_fit, (rir2s[i] for i in range(n_curves)),
+                                          chunksize=chunksize))
+            except PermissionError:
+                from concurrent.futures import ThreadPoolExecutor
+
+                _pool_init(X, no_noise, alpha, kwargs)
+                with ThreadPoolExecutor(max_workers=n_jobs) as ex:
+                    results = list(ex.map(_pool_fit, (rir2s[i] for i in range(n_curves))))
         finally:
             for v, old in _saved_env.items():
                 if old is None:
