@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "multi_slope_linex"
+version = "0.1.0"
+description = "Multi-slope amplitude estimation for room-acoustic energy decay via a LINEX loss (robust alpha-continuation solver); includes a common-slope analysis pipeline."
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{ name = "Jeremy Bai" }]
+license = { text = "MIT" }
+dependencies = [
+    "numpy>=1.21",
+    "scipy>=1.7",
+]
+
+[project.optional-dependencies]
+examples = ["matplotlib>=3.4"]
+test = ["pytest>=7.0", "matplotlib>=3.4"]
+# Full RIR pipeline: DecayFitNet decay-time estimation runs the ONNX model
+# directly (torch-free). Model files (DecayFitNet*_v10.onnx, input_transform*.pkl)
+# are obtained from the DecayFitNet repository; point DFN_MODEL_DIR at
+# its checkout or its model directory.
+pipeline = ["onnxruntime>=1.16"]
+
+[tool.setuptools]
+packages = ["multi_slope_linex", "multi_slope_linex.pipeline"]
