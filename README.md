@@ -2,30 +2,28 @@
 
 **Multi-slope amplitude estimation** for room-acoustic energy decay. Fit the non-negative amplitudes of a multi-exponential decay model to a room impulse response with a **LINEX (linear-exponential) loss**.
 
-Use `estimate_amplitudes` when the decay times are known, or `common_slope_analysis` to analyze a set of room impulse responses.
-
-## References
-
 For the model, statistical derivation, and evaluation, see Bai and Schlecht, [*Estimation of Multi-Slope Amplitudes in Late Reverberation*](https://www.dafx.de/paper-archive/2025/DAFx25_paper_28.pdf), Proceedings of the 28th International Conference on Digital Audio Effects (DAFx25), 2025, pp. 194–201.
 
-Repository-specific details are split into two concise notes:
+A concise summary of the math details are also available in the notes belows:
 
-- [Basic estimator mathematics](docs/LINEX_AMPLITUDE_MATH.md)
-- [Robust α-continuation](docs/LINEX_CONVERGENCE_FIX.md)
+- [Inferences of amplitude estimator](docs/AMPLITUDE.md)
+- [Convergence with robust α-continuation](docs/CONTINUATION.md)
 
-## Install
+## Quick Start
+
+### Install
 
 From the repository root:
 
 ```bash
-python -m pip install .
-python -m pip install ".[examples]"   # example plots
-python -m pip install ".[pipeline]"   # automatic decay-time estimation
+pip install .
+pip install ".[examples]"   # example plots
+pip install ".[pipeline]"   # automatic decay-time estimation
 ```
 
-## Quick Start
-
 ### Estimate Amplitudes
+
+Use `estimate_amplitudes` when the decay times are known.
 
 ```python
 import numpy as np
@@ -43,19 +41,9 @@ result = estimate_amplitudes(
 print(result["amp_db"])
 ```
 
-For several energy curves:
+### Common Slope Analysis of RIRs Batch
 
-```python
-from multi_slope_linex import common_slope_fit
-
-amplitudes, info = common_slope_fit(
-    (h**2).T, common_decay_times=[1, 2, np.inf], fs=2000
-)
-```
-
-`common_slope_fit` accepts energy (`h²`). `estimate_amplitudes` accepts a raw signal and squares it by default.
-
-### Common Slope Analysis of a Set of RIRs
+Use `common_slope_analysis` to analyze a set of room impulse responses.
 
 ```python
 from multi_slope_linex import common_slope_analysis
@@ -74,13 +62,7 @@ print(result["aVals"])             # energy amplitudes, one row per RIR
 
 For automatic decay-time estimation, clone [DecayFitNet](https://github.com/georg-goetz/DecayFitNet) and set `DFN_MODEL_DIR` to either the checkout or its `model/` directory. When the decay times are already known, pass them with `common_decay_times=` and no model files are required.
 
-## Examples
+## Main References
 
-```bash
-python examples/single_slope.py [N]     # one decay component
-python examples/multi_slope.py [N]      # three decay components
-python examples/pipeline_demo.py        # a synthetic RIR set
-python examples/compare_edc_vs_linex.py # LINEX and EDC amplitude maps
-```
-
-The example scripts save their figures alongside the script files.
+- G. Götz, R. Falcón Pérez, S. J. Schlecht, and V. Pulkki, [*Neural network for multi-exponential sound energy decay analysis*](https://doi.org/10.1121/10.0013416), *Journal of the Acoustical Society of America*, vol. 152, no. 2, pp. 942–953, 2022.
+- G. Götz, S. J. Schlecht, and V. Pulkki, [*Common-slope modeling of late reverberation*](https://doi.org/10.1109/TASLP.2023.3317572), *IEEE/ACM Transactions on Audio, Speech, and Language Processing*, vol. 31, pp. 3945–3957, 2023. 

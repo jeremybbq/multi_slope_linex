@@ -1,4 +1,4 @@
-# LINEX Amplitude Estimation: Basic Mathematics
+# LINEX Amplitude Estimation
 
 ## Scope
 
